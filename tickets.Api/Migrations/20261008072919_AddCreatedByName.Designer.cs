@@ -12,8 +12,8 @@ using tickets.Api.Db;
 namespace tickets.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261005162456_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20261008072919_AddCreatedByName")]
+    partial class AddCreatedByName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,38 @@ namespace tickets.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("tickets.Api.Entity.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
                 {
                     b.Property<Guid>("Id")
@@ -34,15 +66,16 @@ namespace tickets.Api.Migrations
                     b.Property<Guid?>("AssignedToUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Comments")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -109,13 +142,27 @@ namespace tickets.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("tickets.Api.Entity.Comment", b =>
+                {
+                    b.HasOne("tickets.Api.Entity.Ticket", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
                 {
-                    b.HasOne("tickets.Api.Entity.User", "AssignedtoUser")
+                    b.HasOne("tickets.Api.Entity.User", "AssignedToUser")
                         .WithMany()
                         .HasForeignKey("AssignedToUserId");
 
-                    b.Navigation("AssignedtoUser");
+                    b.Navigation("AssignedToUser");
+                });
+
+            modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
+                {
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

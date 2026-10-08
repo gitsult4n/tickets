@@ -51,7 +51,7 @@ namespace tickets.Api.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
@@ -68,6 +68,11 @@ namespace tickets.Api.Migrations
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -145,11 +150,11 @@ namespace tickets.Api.Migrations
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
                 {
-                    b.HasOne("tickets.Api.Entity.User", "AssignedtoUser")
+                    b.HasOne("tickets.Api.Entity.User", "AssignedToUser")
                         .WithMany()
                         .HasForeignKey("AssignedToUserId");
 
-                    b.Navigation("AssignedtoUser");
+                    b.Navigation("AssignedToUser");
                 });
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>

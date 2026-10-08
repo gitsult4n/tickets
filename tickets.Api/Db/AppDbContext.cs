@@ -8,4 +8,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
+    public DbSet<Comment> Comments => Set<Comment>();
 }

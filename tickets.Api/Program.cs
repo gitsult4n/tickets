@@ -1,14 +1,21 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using tickets.Api.Common;
 using tickets.Api.Db;
+using tickets.Api.Entity;
+using tickets.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(s =>
 {
@@ -46,33 +53,33 @@ builder
     {
         o.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             ),
+            NameClaimType = "name",
         };
     });
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("defaultConnection"))
 );
-var requireAuthPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.MapGet("/hello", () => "hello").RequireAuthorization();
+
+// using (var scope = app.Services.CreateScope())
+//     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+app.UseStaticFiles();
+app.UseSwagger();
+app.UseSwaggerUI(c => c.InjectStylesheet("/swagger-ui/dark.css"));
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

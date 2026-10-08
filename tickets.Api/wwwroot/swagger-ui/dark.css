@@ -1,0 +1,10 @@
+html {
+    background: #fff;
+    filter: invert(90%) hue-rotate(180deg);
+}
+
+img,
+svg,
+.microlight {
+    filter: invert(100%) hue-rotate(180deg);
+}

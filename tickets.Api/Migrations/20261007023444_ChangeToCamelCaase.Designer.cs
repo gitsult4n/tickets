@@ -12,8 +12,8 @@ using tickets.Api.Db;
 namespace tickets.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261006162643_CommentEntity")]
-    partial class CommentEntity
+    [Migration("20261007023444_ChangeToCamelCaase")]
+    partial class ChangeToCamelCaase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,7 +54,7 @@ namespace tickets.Api.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
@@ -148,11 +148,11 @@ namespace tickets.Api.Migrations
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
                 {
-                    b.HasOne("tickets.Api.Entity.User", "AssignedtoUser")
+                    b.HasOne("tickets.Api.Entity.User", "AssignedToUser")
                         .WithMany()
                         .HasForeignKey("AssignedToUserId");
 
-                    b.Navigation("AssignedtoUser");
+                    b.Navigation("AssignedToUser");
                 });
 
             modelBuilder.Entity("tickets.Api.Entity.Ticket", b =>
