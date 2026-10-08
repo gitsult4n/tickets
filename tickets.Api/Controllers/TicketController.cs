@@ -41,4 +41,28 @@ public class TicketController(TicketService tictService) : ControllerBase
         var ticket = await tictService.GetTicketById(id, User.GetUserId(), User.IsInRole("Admin"));
         return ticket is not null ? Ok(ticket) : NotFound("Ticket Not Found");
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TicketResponse>> UpdateTicket(
+        Guid id,
+        TicketUpdateRequest request
+    )
+    {
+        var ticket = await tictService.UpdateTicket(
+            id,
+            request,
+            User.GetUserId(),
+            User.IsInRole("Admin")
+        );
+        return ticket is not null ? Ok(ticket) : NotFound("Ticket not found");
+    }
+
+    [HttpPatch("{id:guid}/close")]
+    public async Task<IActionResult> CloseTicket(Guid id) =>
+        await tictService.CloseTicket(id, User.GetUserId(), User.IsInRole("Admin"))
+            ? NoContent()
+            : NotFound("Ticket not found");
+    
+    
+    [HttpDelete("{id:guid}")]
 }
