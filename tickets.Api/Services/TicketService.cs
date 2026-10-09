@@ -77,6 +77,7 @@ public sealed class TicketService(AppDbContext db)
     public async Task<TicketResponse?> UpdateTicket(
         Guid id,
         TicketUpdateRequest request,
+        Priority? priority,
         Guid userId,
         bool isAdmin
     )
@@ -89,7 +90,7 @@ public sealed class TicketService(AppDbContext db)
             return null;
         ticket.Title = request.Title ?? ticket.Title;
         ticket.Description = request.Description ?? ticket.Description;
-        ticket.Priority = request.Priority ?? ticket.Priority;
+        ticket.Priority = priority ?? ticket.Priority;
         ticket.UpdatedBy = userId;
         ticket.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
@@ -123,8 +124,7 @@ public sealed class TicketService(AppDbContext db)
     )
     {
         var ticket = await db
-            .Tickets.Include(t => t.Comments)
-            .Include(t => t.AssignedToUser)
+            .Tickets.Include(t => t.AssignedToUser)
             .FirstOrDefaultAsync(t => t.Id == id && (isAdmin || t.AssignedToUserId == userId));
         if (ticket is null)
             return null;

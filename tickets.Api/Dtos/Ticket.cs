@@ -22,11 +22,8 @@ public record TicketCreateRequest(
 
 public record TicketUpdateRequest(
     [MaxLength(30, ErrorMessage = "Title Max Length is 30 Characters")] string? Title,
-    [MaxLength(400, ErrorMessage = "Description Max Length is 400 Characters")] string? Description,
-    Priority? Priority
+    [MaxLength(400, ErrorMessage = "Description Max Length is 400 Characters")] string? Description
 );
-
-public record TicketStatusRequest(Status Status);
 
 public record TicketAssignRequest(Guid? UserId, string? Username);
 
