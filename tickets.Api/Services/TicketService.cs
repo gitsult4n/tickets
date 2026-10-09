@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using tickets.Api.Common;
 using tickets.Api.Db;
 using tickets.Api.Dtos;
 using tickets.Api.Entity;
@@ -44,19 +45,24 @@ public sealed class TicketService(AppDbContext db)
     public async Task<List<TicketResponse>> GetTicketsList(
         Guid userId,
         bool isAdmin,
-        string? search
+        Pagination pagination
     )
     {
         var query = db.Tickets.Where(t =>
             isAdmin || t.CreatedBy == userId || t.AssignedToUserId == userId
         );
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(pagination.Search))
+        {
+            var isPriority = Enum.TryParse<Priority>(pagination.Search, true, out var priority);
+            var isStatus = Enum.TryParse<Status>(pagination.Search, true, out var status);
             query = query.Where(t =>
-                EF.Functions.ILike(t.Title, $"%{search}%")
-                || EF.Functions.ILike(t.Description, $"%{search}%")
-                || EF.Functions.ILike(t.CreatedByName, $"%{search}%")
+                (isPriority && t.Priority == priority) || (isStatus && t.Status == status)
             );
+        }
         var tickets = await query
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
             .Include(t => t.Comments)
             .Include(t => t.AssignedToUser)
             .ToListAsync();

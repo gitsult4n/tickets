@@ -32,8 +32,8 @@ public class TicketController(TicketService tictService) : ControllerBase
 
     [HttpGet("GetTicketsList")]
     public async Task<ActionResult<List<TicketResponse>>> GetListOfTickets(
-        [FromQuery] string? search
-    ) => Ok(await tictService.GetTicketsList(User.GetUserId(), User.IsInRole("Admin"), search));
+        [FromQuery] Pagination pagination
+    ) => Ok(await tictService.GetTicketsList(User.GetUserId(), User.IsInRole("Admin"), pagination));
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TicketResponse>> GetTicketById(Guid id)
@@ -74,7 +74,7 @@ public class TicketController(TicketService tictService) : ControllerBase
     [HttpPatch("{id:guid}/status")]
     public async Task<ActionResult<TicketResponse>> UpdateTicketStatus(
         Guid id,
-        [FromQuery, BindRequired] Status status
+        [FromQuery] Status status
     )
     {
         var ticket = await tictService.UpdateStatus(
@@ -84,5 +84,18 @@ public class TicketController(TicketService tictService) : ControllerBase
             User.IsInRole("Admin")
         );
         return ticket is not null ? ticket : NotFound("Ticket not found");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPatch("{id:guid}/assign")]
+    public async Task<ActionResult<TicketResponse>> AssignTicket(
+        Guid id,
+        TicketAssignRequest request
+    )
+    {
+        if (request.UserId is null && string.IsNullOrWhiteSpace(request.Username))
+            return BadRequest("UserId or Username is required");
+        var ticket = await tictService.AssignTicket(id, request, User.GetUserId());
+        return ticket is not null ? ticket : NotFound("Ticket or User not found");
     }
 }

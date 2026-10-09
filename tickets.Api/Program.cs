@@ -68,6 +68,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddAuthorization();
 var app = builder.Build();
