@@ -33,4 +33,9 @@ public sealed class CommentService(AppDbContext db)
         await db.SaveChangesAsync();
         return comment;
     }
+
+    public async Task<bool> DeleteComment(Guid id, Guid userId, bool isAdmin) =>
+        await db
+            .Comments.Where(c => c.Id == id && (isAdmin || c.CreatedBy == userId))
+            .ExecuteDeleteAsync() > 0;
 }
