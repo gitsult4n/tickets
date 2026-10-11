@@ -29,17 +29,7 @@ public sealed class TicketService(AppDbContext db)
         };
         await db.AddAsync(ticket);
         await db.SaveChangesAsync();
-        return new TicketResponse(
-            Id: ticket.Id,
-            AssignedToUserId: null,
-            Title: ticket.Title,
-            Description: ticket.Description,
-            Comments: [],
-            Priority: ticket.Priority.ToString(),
-            Status: ticket.Status.ToString(),
-            AssignedToUserName: null,
-            CreatedByName: ticket.CreatedByName
-        );
+        return ToResponse(ticket);
     }
 
     public async Task<List<TicketResponse>> GetTicketsList(

@@ -60,13 +60,13 @@ public class TicketController(TicketService tictService) : ControllerBase
     }
 
     [HttpPatch("{id:guid}/close")]
-    public async Task<IActionResult> CloseTicket(Guid id) =>
+    public async Task<ActionResult> CloseTicket(Guid id) =>
         await tictService.CloseTicket(id, User.GetUserId(), User.IsInRole("Admin"))
             ? Ok("Ticket Closed Suecssfully")
             : NotFound("Ticket not found");
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTicket(Guid id) =>
+    public async Task<ActionResult> DeleteTicket(Guid id) =>
         await tictService.DeleteTicket(id, User.GetUserId(), User.IsInRole("Admin"))
             ? Ok("Ticket deleted Successfully")
             : NotFound("Ticket not found");

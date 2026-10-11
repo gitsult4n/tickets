@@ -27,14 +27,6 @@ public record TicketUpdateRequest(
 
 public record TicketAssignRequest(Guid? UserId, string? Username);
 
-public record CommentCreateRequest(
-    [
-        MaxLength(300, ErrorMessage = "Comment Max Length is 300 Characters"),
-        Required(ErrorMessage = "Comment is Required")
-    ]
-        string Content
-);
-
 public record TicketResponse(
     Guid Id,
     Guid? AssignedToUserId,

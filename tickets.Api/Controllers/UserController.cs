@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using tickets.Api.Common;
 using tickets.Api.Dtos;
 using tickets.Api.Services;
 
@@ -11,13 +13,13 @@ namespace tickets.Api.Controllers;
 public class UserController(UserService usrService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(UserRequest request) =>
+    public async Task<ActionResult> Register(UserRequest request) =>
         await usrService.Register(request)
             ? Ok(new { message = "User registered successfully." })
             : Conflict("Username already exists.");
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(UserRequest request)
+    public async Task<ActionResult> Login(UserRequest request)
     {
         var response = await usrService.Login(request);
         return response is not null ? Ok(response) : Unauthorized("Invalid username or password.");
@@ -25,8 +27,22 @@ public class UserController(UserService usrService) : ControllerBase
 
     // [Authorize]
     [HttpGet("me")]
+    [Authorize]
+    public IActionResult GetCurrentUserName() =>
+        Ok(
+            new
+            {
+                Name = User.GetUserName(),
+                Id = User.GetUserId(),
+                Role = User.FindFirstValue(ClaimTypes.Role),
+            }
+        // Console.WriteLine(Name);
+        );
+
+    // public IActionResult GetCurrentUserId() => Ok(new { Id = User.GetUserId() });
+    [HttpGet("role")]
     [Authorize(Roles = "Admin")]
-    public IActionResult GetCurrentUser() => Ok(new { User.Identity?.Name });
+    public IActionResult GetCurrentUserRole() => Ok(new { Role = User.IsInRole("Admin") });
     // $"IsAdmin = {User.IsInRole("Admin")}, Name = {User.Identity?.Name"}
     // [Authorize(Roles = "Admin")]
     // [HttpGet("me")]

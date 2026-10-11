@@ -9,7 +9,7 @@ public sealed class CommentService(AppDbContext db)
 {
     public async Task<Comment?> AddComment(
         Guid ticketId,
-        CommentCreateRequest request,
+        CommentDtoRequest request,
         Guid userId,
         bool isAdmin
     )
