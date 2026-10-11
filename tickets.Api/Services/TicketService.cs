@@ -10,13 +10,15 @@ namespace tickets.Api.Services;
 
 public sealed class TicketService(AppDbContext db)
 {
-    public async Task<TicketResponse> CreateTicket(
+    public async Task<TicketResponse?> CreateTicket(
         TicketCreateRequest request,
         Priority priority,
         Guid userId,
         string userName
     )
     {
+        if (userId == Guid.Empty || string.IsNullOrWhiteSpace(userName))
+            return null;
         var ticket = new Ticket
         {
             Title = request.Title,
@@ -29,7 +31,7 @@ public sealed class TicketService(AppDbContext db)
         };
         await db.AddAsync(ticket);
         await db.SaveChangesAsync();
-        return ToResponse(ticket);
+        return ticket is null ? null : ToResponse(ticket);
     }
 
     public async Task<List<TicketResponse>> GetTicketsList(

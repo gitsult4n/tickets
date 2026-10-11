@@ -33,7 +33,7 @@ public class TicketDeleteTests
             "sultan"
         );
 
-        var deleted = await service.DeleteTicket(created.Id, Guid.NewGuid(), isAdmin: false);
+        var deleted = await service.DeleteTicket(created!.Id, Guid.NewGuid(), isAdmin: false);
 
         Assert.False(deleted);
     }
@@ -51,7 +51,25 @@ public class TicketDeleteTests
             "sultan"
         );
 
-        var deleted = await service.DeleteTicket(created.Id, owner, isAdmin: false);
+        var deleted = await service.DeleteTicket(created!.Id, owner, isAdmin: false);
+
+        Assert.True(deleted);
+    }
+
+    [Fact]
+    public async Task DeleteTicket_ByAdmin_ReturnsTrue()
+    {
+        await using var db = CreateDb();
+        var service = new TicketService(db);
+        var owner = Guid.NewGuid();
+        var created = await service.CreateTicket(
+            new TicketCreateRequest("Title", "Description"),
+            Priority.High,
+            owner,
+            "sultan"
+        );
+
+        var deleted = await service.DeleteTicket(created!.Id, Guid.NewGuid(), isAdmin: true);
 
         Assert.True(deleted);
     }

@@ -27,7 +27,7 @@ public class TicketController(TicketService tictService) : ControllerBase
             User.GetUserId(),
             User.GetUserName()
         );
-        return Ok(ticket);
+        return ticket is null ? BadRequest("Ticket creation failed") : Ok(ticket);
     }
 
     [HttpGet("GetTicketsList")]
@@ -74,7 +74,7 @@ public class TicketController(TicketService tictService) : ControllerBase
     [HttpPatch("{id:guid}/status")]
     public async Task<ActionResult<TicketResponse>> UpdateTicketStatus(
         Guid id,
-        [FromQuery] Status status
+        [FromQuery, BindRequired] Status status
     )
     {
         var ticket = await tictService.UpdateStatus(
