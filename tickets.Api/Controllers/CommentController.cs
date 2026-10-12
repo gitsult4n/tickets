@@ -19,14 +19,14 @@ public class CommentController(CommentService commentService) : ControllerBase
             id,
             request,
             User.GetUserId(),
-            User.IsInRole("Admin")
+            User.IsAdmin()
         );
         return comment is not null ? comment : NotFound("Ticket not found");
     }
 
     [HttpDelete("")]
     public async Task<ActionResult> RemoveComment(Guid id) =>
-        await commentService.DeleteComment(id, User.GetUserId(), User.IsInRole("Admin"))
+        await commentService.DeleteComment(id, User.GetUserId(), User.IsAdmin())
             ? Ok("Comment deleted Successfully")
             : NotFound("comment not found");
 }

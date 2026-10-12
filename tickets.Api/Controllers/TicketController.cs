@@ -33,12 +33,12 @@ public class TicketController(TicketService tictService) : ControllerBase
     [HttpGet("GetTicketsList")]
     public async Task<ActionResult<List<TicketResponse>>> GetListOfTickets(
         [FromQuery] Pagination pagination
-    ) => Ok(await tictService.GetTicketsList(User.GetUserId(), User.IsInRole("Admin"), pagination));
+    ) => Ok(await tictService.GetTicketsList(User.GetUserId(), User.IsAdmin(), pagination));
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TicketResponse>> GetTicketById(Guid id)
     {
-        var ticket = await tictService.GetTicketById(id, User.GetUserId(), User.IsInRole("Admin"));
+        var ticket = await tictService.GetTicketById(id, User.GetUserId(), User.IsAdmin());
         return ticket is not null ? ticket : NotFound("Ticket Not Found");
     }
 
@@ -54,20 +54,20 @@ public class TicketController(TicketService tictService) : ControllerBase
             request,
             priority,
             User.GetUserId(),
-            User.IsInRole("Admin")
+            User.IsAdmin()
         );
         return ticket is not null ? ticket : NotFound("Ticket not found");
     }
 
     [HttpPatch("{id:guid}/close")]
     public async Task<ActionResult> CloseTicket(Guid id) =>
-        await tictService.CloseTicket(id, User.GetUserId(), User.IsInRole("Admin"))
+        await tictService.CloseTicket(id, User.GetUserId(), User.IsAdmin())
             ? Ok("Ticket Closed Suecssfully")
             : NotFound("Ticket not found");
 
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteTicket(Guid id) =>
-        await tictService.DeleteTicket(id, User.GetUserId(), User.IsInRole("Admin"))
+        await tictService.DeleteTicket(id, User.GetUserId(), User.IsAdmin())
             ? Ok("Ticket deleted Successfully")
             : NotFound("Ticket not found");
 
@@ -77,12 +77,7 @@ public class TicketController(TicketService tictService) : ControllerBase
         [FromQuery, BindRequired] Status status
     )
     {
-        var ticket = await tictService.UpdateStatus(
-            id,
-            status,
-            User.GetUserId(),
-            User.IsInRole("Admin")
-        );
+        var ticket = await tictService.UpdateStatus(id, status, User.GetUserId(), User.IsAdmin());
         return ticket is not null ? ticket : NotFound("Ticket not found");
     }
 

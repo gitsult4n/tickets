@@ -26,8 +26,8 @@ public class UserController(UserService usrService) : ControllerBase
     }
 
     // [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet("me")]
-    [Authorize]
     public IActionResult GetCurrentUserName() =>
         Ok(
             new
@@ -42,8 +42,8 @@ public class UserController(UserService usrService) : ControllerBase
     // public IActionResult GetCurrentUserId() => Ok(new { Id = User.GetUserId() });
     [HttpGet("role")]
     [Authorize(Roles = "Admin")]
-    public IActionResult GetCurrentUserRole() => Ok(new { Role = User.IsInRole("Admin") });
-    // $"IsAdmin = {User.IsInRole("Admin")}, Name = {User.Identity?.Name"}
+    public IActionResult GetCurrentUserRole() => Ok(new { Role = User.IsAdmin() });
+    // $"IsAdmin = {User.IsAdmin()}, Name = {User.Identity?.Name"}
     // [Authorize(Roles = "Admin")]
     // [HttpGet("me")]
     // public IActionResult GetCurrentUser()

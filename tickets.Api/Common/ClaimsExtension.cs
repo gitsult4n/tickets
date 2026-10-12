@@ -7,6 +7,7 @@ public static class ClaimsExtension
     public static Guid GetUserId(this ClaimsPrincipal user) =>
         Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    public static string GetUserName(this ClaimsPrincipal user) =>
-        user.Identity!.Name!;
+    public static string GetUserName(this ClaimsPrincipal user) => user.Identity!.Name!;
+
+    public static bool IsAdmin(this ClaimsPrincipal user) => user.IsInRole("Admin");
 }

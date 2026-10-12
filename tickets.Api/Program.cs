@@ -77,7 +77,7 @@ var app = builder.Build();
 //     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
 app.UseStaticFiles();
 app.UseSwagger();
-app.UseSwaggerUI(c => c.InjectStylesheet("/swagger-ui/dark.css"));
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
