@@ -31,7 +31,7 @@ public sealed class TicketService(AppDbContext db)
         };
         await db.AddAsync(ticket);
         await db.SaveChangesAsync();
-        return ticket is null ? null : ToResponse(ticket);
+        return ToResponse(ticket);
     }
 
     public async Task<List<TicketResponse>> GetTicketsList(

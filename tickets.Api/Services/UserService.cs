@@ -24,7 +24,8 @@ public sealed class UserService(
         var username = request.Username.ToLowerInvariant();
         if (await db.Users.AnyAsync(u => u.Username == username))
             return false;
-        var user = new User { Username = username, Password = string.Empty };
+        var user = new User { Username = username, Password = "" };
+        Console.Write(user);
         user.Password = pwdHash.HashPassword(user, request.Password);
         db.Add(user);
         user.CreatedBy = user.Id;
@@ -48,7 +49,7 @@ public sealed class UserService(
             _jwt.Issuer,
             _jwt.Audience,
             [
-                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new("sub", user.Id.ToString()),
                 new("name", user.Username),
                 new("role", user.Role.ToString()),
             ],

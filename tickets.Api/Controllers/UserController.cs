@@ -36,7 +36,6 @@ public class UserController(UserService usrService) : ControllerBase
                 Id = User.GetUserId(),
                 Role = User.FindFirstValue(ClaimTypes.Role),
             }
-        // Console.WriteLine(Name);
         );
 
     // public IActionResult GetCurrentUserId() => Ok(new { Id = User.GetUserId() });
