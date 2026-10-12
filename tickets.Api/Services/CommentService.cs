@@ -11,7 +11,8 @@ public sealed class CommentService(AppDbContext db)
         Guid ticketId,
         CommentDtoRequest request,
         Guid userId,
-        bool isAdmin
+        bool isAdmin,
+        string Username
     )
     {
         var canComment = await db.Tickets.AnyAsync(t =>
@@ -28,6 +29,7 @@ public sealed class CommentService(AppDbContext db)
             TicketId = ticketId,
             CreatedBy = userId,
             CreatedAt = DateTime.UtcNow,
+            Username = Username,
         };
         db.Comments.Add(comment);
         await db.SaveChangesAsync();

@@ -19,7 +19,8 @@ public class CommentController(CommentService commentService) : ControllerBase
             id,
             request,
             User.GetUserId(),
-            User.IsAdmin()
+            User.IsAdmin(),
+            User.GetUserName()
         );
         return comment is not null ? comment : NotFound("Ticket not found");
     }

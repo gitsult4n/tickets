@@ -97,16 +97,21 @@ public sealed class TicketService(AppDbContext db)
 
     public async Task<bool> CloseTicket(Guid id, Guid userId, bool isAdmin)
     {
-        var ticket = await db.Tickets.FirstOrDefaultAsync(t =>
-            t.Id == id && (isAdmin || t.CreatedBy == userId)
-        );
-        if (ticket is null)
-            return false;
-        ticket.Status = Status.Closed;
-        ticket.UpdatedBy = userId;
-        ticket.UpdatedAt = DateTime.UtcNow;
-        await db.SaveChangesAsync();
-        return true;
+        var ticket = await db
+            .Tickets.Include(t => t.AssignedToUser)
+            .FirstOrDefaultAsync(t =>
+                t.Id == id && (isAdmin || t.CreatedBy == userId || t.AssignedToUserId == userId)
+            );
+
+        {
+            if (ticket is null)
+                return false;
+            ticket.Status = Status.Closed;
+            ticket.UpdatedBy = userId;
+            ticket.UpdatedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            return true;
+        }
     }
 
     public async Task<bool> DeleteTicket(Guid id, Guid userId, bool isAdmin) =>
