@@ -9,10 +9,10 @@ namespace tickets.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/[controller]/{id:guid}")]
+[Route("api/[controller]")]
 public class CommentController(CommentService commentService) : ControllerBase
 {
-    [HttpPost("comments")]
+    [HttpPost("create")]
     public async Task<ActionResult<Comment>> AddComment(Guid id, CommentDtoRequest request)
     {
         var comment = await commentService.AddComment(
@@ -25,7 +25,7 @@ public class CommentController(CommentService commentService) : ControllerBase
         return comment is not null ? comment : NotFound("Ticket not found");
     }
 
-    [HttpDelete("")]
+    [HttpDelete("{id:guid}")]
     public async Task<ActionResult> RemoveComment(Guid id) =>
         await commentService.DeleteComment(id, User.GetUserId(), User.IsAdmin())
             ? Ok("Comment deleted Successfully")

@@ -82,7 +82,6 @@ public sealed class TicketService(AppDbContext db)
     {
         var ticket = await db
             .Tickets.Include(t => t.Comments)
-            .Include(t => t.AssignedToUser)
             .FirstOrDefaultAsync(t => t.Id == id && (isAdmin || t.CreatedBy == userId));
         if (ticket is null)
             return null;
