@@ -73,8 +73,6 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddAuthorization();
 var app = builder.Build();
 
-// using (var scope = app.Services.CreateScope())
-//     await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
 app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
